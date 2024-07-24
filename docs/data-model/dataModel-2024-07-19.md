@@ -76,6 +76,7 @@ All permits inherit the properties from [base data type](#base-data-properties).
 |latitude|`Number`|The latitude of the inventory|N|
 |longitude|`Number`|The longitude of the inventory|N|
 |geohash|`String`|Minimum 4 point precision geohash of the place|N|
+|mapZoom|`Number`|Zoom level at which the item appears on a map|N|
 |isFinite|`Boolean`|Whether or not the inventory belongs to a finite set|Y|
 |isReservable|`Boolean`|Whether or not the inventory is reservable|Y|
 |parentPermit|`Permit`|The permit that handles the allocation of the inventory. See [**permits**](#permits)|N|
@@ -203,3 +204,4 @@ All places inherit the properties from [base data type](#base-data-properties).
 |geohash|`String`|Minimum 4 point precision geohash of the place|Y|
 |latitude|`Number`|The latitude of the place|Y|
 |longitude|`Number`|The longitude of the place|Y|
+|mapZoom|`Number`|Zoom level at which the item appears on a map|N|

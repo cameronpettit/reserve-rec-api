@@ -76,10 +76,24 @@ All permits inherit the properties from [base data type](#base-data-properties).
 |latitude|`Number`|The latitude of the inventory|N|
 |longitude|`Number`|The longitude of the inventory|N|
 |geohash|`String`|Minimum 4 point precision geohash of the place|N|
+|timezone|`String`|The IANA string timezone identifier of the timezone within which the inventory exists*|Y|
 |mapZoom|`Number`|Zoom level at which the item appears on a map|N|
 |isFinite|`Boolean`|Whether or not the inventory belongs to a finite set|Y|
 |isReservable|`Boolean`|Whether or not the inventory is reservable|Y|
 |parentPermit|`Permit`|The permit that handles the allocation of the inventory. See [**permits**](#permits)|N|
+|parkName|`String`|The name of the parent park|N|
+|orcs|`Number`|The orcs of the parent park|N|
+|siteName|`String`|The name of the parent geospatial site/campground/subarea/etc|N|
+|cwAssetId|`Number`|CityWide Asset Id|N|
+
+*Likely inherited from the inventory's parent place.
+
+BC has [3 timezones](https://en.wikipedia.org/wiki/Time_in_Canada#/media/File:Canada_time_zone_map_-_en.svg):
+|**Abbreviation**|**IANA String**|
+|---|---|
+|`PST/PDT`|`America/Vancouver`|
+|`MST/MDT`|`America/Edmonton`|
+|`MST`|`America/Fort_Nelson`|
 
 ## Permits
 A permit is a physical or digital document that gives someone permission to do something or be somewhere at a certain time. It may additionally permit someone to use BC Parks [**inventory**](#inventory) during that time, possibly exclusively. They exist to give BC Parks a record of who has permission to do something or be somewhere or use which inventory at some point in time. They link specific users to specific inventory. 
@@ -132,7 +146,7 @@ Booking policies define how inventory is made available to users and how users a
 |allDatesBookedIntervals|[`Interval`]|Intervals of dates within which a user cannot book a portion of dates - that is, if any date of their booking coincides with a date in `allDatesBookedIntervals`, they must also book all of the other dates within the `Interval`. Common on holiday weekends.|N|
 
 ### Change Policies
-Change policies define how users are able to change existing claims they may have on inventory. Cancellations fall within change policies as the user is still changing an existing claim they have by returning all their claimed inventory to the system. 
+Change policies define how users are able to change existing claims they may have on inventory. Cancellations fall within change policies as the user is still changing an existing claim they have by returning all their claimed inventory to the system. Fee + Change policies can likely be rolled into 1 policy type.
 |**Property Name**|**Property Type**|**Definition**|**Mandatory?**|
 |---|---|---|---|
 |areChangesAllowed|`Boolean`|Is the user permitted to change their inventory?|Y|
@@ -144,18 +158,17 @@ Change policies define how users are able to change existing claims they may hav
 
 
 ### Fee Policies
-Fee policies define how users are charged for their inventory, and if/how they are refunded in the event of a change or cancellation.
+Fee policies define how users are charged for their inventory, and if/how they are refunded in the event of a change or cancellation. Fee + Change policies can likely be rolled into 1 policy type.
 
 |**Property Name**|**Property Type**|**Definition**|**Mandatory?**|
 |---|---|---|---|
 |isAcceptingPayment|`Boolean`|Does BC Parks charge for this inventory?|Y|
 |adultNightlyCampingFee|`Number`|Fee per adult per night, in dollars|N|
 |childNightlyCampingFee|`Number`|Fee per child per night, in dollars|N|
-|baseChangeFee|`Number`|The change fee per transaction, in dollars.|N|
-|unitChangeFee|`Number`|The change fee per unit of inventory, in dollars.|N|
-|baseTransactionFee|`Number`|The base transaction fee, in dollars|N|
-|unitTransactionFee|`Number`|Fee per unit of inventory in the transaction, in dollars|N|
-|maxTransactionFee|`Number`|Upper limit of transaction fees per transaction, in dollars|N|
+|baseChangeFee|`Number`|The change fee per transaction, in dollars (for flat rates)|N|
+|unitChangeFee|`Number`|The change fee per unit of inventory, in dollars (for rates dependent on inventory quantity)|N|
+|baseReservationFee|`Number`|The base transaction fee, in dollars (for flat rates)|N|
+|unitReservationFee|`Number`|Fee per unit of inventory in the transaction, in dollars (for rates dependent on inventory quantity)|N|
 
 ### Party Policies
 Party policies dictate how user's camping parties are allowed to be composed. They limit the number of people in the party and how many people are allowed to be allotted per unit inventory.
@@ -205,3 +218,4 @@ All places inherit the properties from [base data type](#base-data-properties).
 |latitude|`Number`|The latitude of the place|Y|
 |longitude|`Number`|The longitude of the place|Y|
 |mapZoom|`Number`|Zoom level at which the item appears on a map|N|
+|cwAssetId|`Number`|CityWide asset id, if applicable|N|

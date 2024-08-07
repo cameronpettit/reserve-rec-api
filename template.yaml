@@ -183,7 +183,7 @@ Resources:
       DefaultTTL: 1
       MaxTTL: 1
       MinTTL: 1
-      Name: !sub "${ApiDeployment}-CFCachePolicy"
+      Name: !Sub "${ApiDeployment}-CFCachePolicy"
       ParametersInCacheKeyAndForwardedToOrigin:
         CookiesConfig:
           CookieBehavior: none

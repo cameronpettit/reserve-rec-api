@@ -1,10 +1,28 @@
 version = 0.1
-[dev.deploy.parameters]
+[default]
+[default.global.parameters]
 stack_name = "reserve-rec-api"
+
+[default.build.parameters]
+cached = false
+parallel = true
+
+[default.validate.parameters]
+lint = true
+
+[default.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
 resolve_s3 = true
 s3_prefix = "reserve-rec-api"
 region = "ca-central-1"
-confirm_changeset = true
-capabilities = "CAPABILITY_IAM"
-parameter_overrides = "TableName=\"reserve-rec\" Stage=\"api\""
 image_repositories = []
+
+[dev.deploy.parameters]
+capabilities = "CAPABILITY_IAM"
+confirm_changeset = true
+resolve_s3 = true
+s3_prefix = "reserve-rec-api"
+region = "ca-central-1"
+image_repositories = []
+parameter_overrides = "TableName=\"reserve-rec\" Stage=\"api\""

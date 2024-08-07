@@ -48,7 +48,7 @@ jobs:
 
       ### Set up DynamoDB local
       - name: Setup DynamoDB Local
-        uses: rrainn/dynamodb-action@v3.0.0
+        uses: rrainn/dynamodb-action@v4
         with:
           sharedDb: true
           port: 8000

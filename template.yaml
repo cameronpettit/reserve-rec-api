@@ -174,27 +174,26 @@ Resources:
     Metadata:
       BuildMethod: makefile
 
-
   CloudFrontAPICachePolicy:
-  Type: AWS::CloudFront::CachePolicy
-  Properties:
-    CachePolicyConfig:
-      Comment: "Custom CloudFront Caching Policy to allow the Authorization header through to the Origins."
-      DefaultTTL: 1
-      MaxTTL: 1
-      MinTTL: 1
-      Name: !Sub "${ApiDeployment}-CFCachePolicy"
-      ParametersInCacheKeyAndForwardedToOrigin:
-        CookiesConfig:
-          CookieBehavior: none
-        EnableAcceptEncodingBrotli: false
-        EnableAcceptEncodingGzip: false
-        HeadersConfig:
-          HeaderBehavior: whitelist
-          Headers:
-            - Authorization
-        QueryStringsConfig:
-          QueryStringBehavior: all
+    Type: AWS::CloudFront::CachePolicy
+    Properties:
+      CachePolicyConfig:
+        Comment: "Custom CloudFront Caching Policy to allow the Authorization header through to the Origins."
+        DefaultTTL: 1
+        MaxTTL: 1
+        MinTTL: 1
+        Name: !Sub "${ApiDeployment}-CFCachePolicy"
+        ParametersInCacheKeyAndForwardedToOrigin:
+          CookiesConfig:
+            CookieBehavior: none
+          EnableAcceptEncodingBrotli: false
+          EnableAcceptEncodingGzip: false
+          HeadersConfig:
+            HeaderBehavior: whitelist
+            Headers:
+              - Authorization
+          QueryStringsConfig:
+            QueryStringBehavior: all
 
   SearchFunction:
     FunctionName: SearchFunction

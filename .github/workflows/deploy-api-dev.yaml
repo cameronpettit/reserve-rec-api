@@ -72,7 +72,7 @@ jobs:
           OPEN_SEARCH_MAIN_INDEX: ${{ vars.OPEN_SEARCH_MAIN_INDEX }}
           EBS_IOPS: ${{ vars.EBS_IOPS }}
         run: |
-          sam deploy --stack-name $STACK_NAME --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides "TableName=TABLE_NAME" "TableNameAudit=TABLE_NAME_AUDIT" "Stage=$STAGE" "AccountId=$ACCOUNT_ID" "DomainName=$DOMAIN_NAME" "KMSKeyId=$KMS_KEY_ID" "InstanceCount=$INSTANCE_COUNT" "InstanceType=$INSTANCE_TYPE" "OpenSearchMainIndex=$OPEN_SEARCH_MAIN_INDEX" "EBSIops=$EBS_IOPS"
+          sam deploy --stack-name $STACK_NAME --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides "TableName=$TABLE_NAME" "TableNameAudit=$TABLE_NAME_AUDIT" "Stage=$STAGE" "AccountId=$ACCOUNT_ID" "DomainName=$DOMAIN_NAME" "KMSKeyId=$KMS_KEY_ID" "InstanceCount=$INSTANCE_COUNT" "InstanceType=$INSTANCE_TYPE" "OpenSearchMainIndex=$OPEN_SEARCH_MAIN_INDEX" "EBSIops=$EBS_IOPS"
 
       # - shell: bash
       #   env:

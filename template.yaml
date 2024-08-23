@@ -341,11 +341,11 @@ Resources:
       Description: Config GET lambda function
       Environment:
         Variables:
-          TABLE_NAME: !Ref TableNameRegister
+          TABLE_NAME: !Ref TableName
           LOG_LEVEL: info
       Policies:
         - DynamoDBCrudPolicy:
-            TableName: !Ref TableNameRegister
+            TableName: !Ref TableName
       Events:
         ConfigGet:
           Type: Api

@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "description": "Reserve Rec API System",
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.616.0",
+    "@aws-sdk/util-dynamodb": "^3.540.0",
     "@opensearch-project/opensearch": "^2.11.0",
-    "jest": "^29.7.0",
     "jsonwebtoken": "^9.0.2",
-    "luxon": "^3.4.4",
     "winston": "^3.13.1"
+  },
+  "devDependencies": {
+    "luxon": "^3.4.4",
+    "jest": "^29.7.0",
+    "@aws-sdk/client-dynamodb": "^3.616.0"
   },
   "scripts": {
     "start": "sam local start-api --env-vars env.json --skip-pull-image 2>&1 | tr '\r' '\n'",
@@ -26,7 +29,8 @@
     "moduleNameMapper": {
       "^/opt/dynamodb": "<rootDir>/.aws-sam/build/AWSUtilsLayer/dynamodb",
       "^/opt/base": "<rootDir>/.aws-sam/build/BaseLayer/base",
-      "^/opt/opensearch": "<rootDir>/.aws-sam/build/AWSUtilsLayer/opensearch"
+      "^/opt/opensearch": "<rootDir>/.aws-sam/build/AWSUtilsLayer/opensearch",
+      "^/opt/data-constants": "<rootDir>/.aws-sam/build/DataUtilsLayer/data-constants"
     }
   }
 }

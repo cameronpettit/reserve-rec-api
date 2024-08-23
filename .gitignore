@@ -1,3 +1,8 @@
 node_modules
 .aws-sam
 coverage
+
+# dotenv environment variables file
+.env
+.env.test
+.env*.local

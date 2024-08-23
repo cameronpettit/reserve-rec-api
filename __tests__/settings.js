@@ -1,7 +1,7 @@
 const AWS_REGION = process.env.AWS_REGION || 'local-env';
 const ENDPOINT = 'http://127.0.0.1:8000';
-const DYNAMODB_ENDPOINT_URL = process.env.DYNAMODB_ENDPOINT_URL = ENDPOINT;
-const TABLE_NAME = process.env.TABLE_NAME || 'NameRegistry-tests';
+const DYNAMODB_ENDPOINT_URL = process.env.DYNAMODB_ENDPOINT_URL || ENDPOINT;
+const TABLE_NAME = process.env.TABLE_NAME || 'Reserve-Rec-tests';
 const TIMEZONE = 'America/Vancouver';
 const { DynamoDB } = require('@aws-sdk/client-dynamodb');
 const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb');
@@ -50,7 +50,7 @@ async function createDB(items, tableName = TABLE_NAME) {
 async function deleteDB(tableName = TABLE_NAME) {
     const dynamoDb = new DynamoDB({
         region: AWS_REGION,
-        endpoint: ENDPOINT
+        endpoint: DYNAMODB_ENDPOINT_URL
     });
 
     try {
@@ -66,7 +66,7 @@ async function deleteDB(tableName = TABLE_NAME) {
 async function putDB(data, tableName = TABLE_NAME) {
     const dynamodb = new DynamoDB({
         region: AWS_REGION,
-        endpoint: ENDPOINT,
+        endpoint: DYNAMODB_ENDPOINT_URL,
     });
 
     // If data is a single item, make it an array

@@ -11,7 +11,7 @@ Globals:
     Environment:
       Variables:
         IS_OFFLINE: false
-        DYNAMODB_ENDPOINT_URL: dynamodb.ca-central-1.amazonaws.com
+        DYNAMODB_ENDPOINT_URL: https://dynamodb.ca-central-1.amazonaws.com
 
 Parameters:
   TableName:
@@ -45,9 +45,15 @@ Parameters:
   EBSIops:
     Type: String
     Default: 3000
+  DataRegisterEndpoint:
+    Type: String
+    Default: 'https://dev-data.bcparks.ca/api'
+  DataRegisterApiKey:
+    Type: String
+    Default: 'dev-api'
 
 Resources:
-  DynamoDBTable: 
+  DynamoDBTable:
     Type: AWS::DynamoDB::Table
     Properties:
       TableName: !Ref TableName
@@ -208,6 +214,39 @@ Resources:
           QueryStringsConfig:
             QueryStringBehavior: all
 
+  ### LAMBDAS ###
+
+  # Data Register Integration
+  SyncDataRegisterFunction:
+    FunctionName: SyncDataRegisterFunction
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: handlers/syncDataRegister/
+      Handler: index.handler
+      Runtime: nodejs20.x
+      Description: Syncs Data Register protected areas every day at 08:00 UTC (00:00 PDT)
+      MemorySize: 512
+      Timeout: 900
+      Layers:
+        - !Ref BaseLayer
+        - !Ref AWSUtilsLayer
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref TableName
+            # TableName: !Ref TableNameAudit
+      Environment:
+        Variables:
+          LOG_LEVEL: info
+          DATA_REGISTER_ENDPOINT: !Ref DataRegisterEndpoint
+          DATA_REGISTER_API_KEY: !Ref DataRegisterApiKey
+      Events:
+        UpdateProtectedAreas:
+          Type: Schedule
+          Properties:
+            Name: "SyncDataRegisterFunctionSchedule"
+            Schedule: cron(0 8 * * ? *)
+            Description: "Sync Data Register protected areas every day at 08:00 UTC (00:00 PDT)"
+
   SearchFunction:
     FunctionName: SearchFunction
     Type: AWS::Serverless::Function
@@ -222,7 +261,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 7
+      Timeout: 20
       Description: Search Handler
       Policies:
         - ElasticsearchHttpPostPolicy:

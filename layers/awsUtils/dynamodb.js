@@ -19,7 +19,7 @@ const dynamodbClient = new DynamoDBClient(options);
 
 // simple way to return a single Item by primary key.
 async function getOne(pk, sk) {
-  logger.debug(`getItem: { pk: ${pk}, sk: ${sk} }`);
+  logger.info(`getItem: { pk: ${pk}, sk: ${sk} }`);
   const params = {
     TableName: TABLE_NAME,
     Key: marshall({ pk, sk }),
@@ -61,11 +61,11 @@ async function
     if (page < 2) {
       logger.debug(`Page ${page} data:`, data);
     } else {
-      logger.debug(`Page ${page} contains ${pageData.Items.length} additional query results...`);
+      logger.info(`Page ${page} contains ${pageData.Items.length} additional query results...`);
     }
   } while (pageData?.LastEvaluatedKey && !paginated);
 
-  logger.debug(`Query result pages: ${page}, total returned items: ${data.length}`);
+  logger.info(`Query result pages: ${page}, total returned items: ${data.length}`);
   if (paginated) {
     return {
       lastEvaluatedKey: pageData.LastEvaluatedKey,
@@ -106,11 +106,11 @@ async function runScan(query, limit = null, lastEvaluatedKey = null, paginated =
     if (page < 2) {
       logger.debug(`Page ${page} data:`, data);
     } else {
-      logger.debug(`Page ${page} contains ${pageData.Items.length} additional scan results...`);
+      logger.info(`Page ${page} contains ${pageData.Items.length} additional scan results...`);
     }
   } while (pageData?.LastEvaluatedKey && !paginated);
 
-  logger.debug(`Scan result pages: ${page}, total returned items: ${data.length}`);
+  logger.info(`Scan result pages: ${page}, total returned items: ${data.length}`);
   if (paginated) {
     return {
       lastEvaluatedKey: pageData.LastEvaluatedKey,
@@ -158,7 +158,7 @@ async function batchWriteData(dataToInsert, chunkSize, tableName) {
     };
 
     try {
-      logger.debug(JSON.stringify(params));
+      logger.info(JSON.stringify(params));
       const data = await dynamodb.batchWriteItem(params);
       logger.info(`BatchWriteItem response for chunk ${index}:`, data);
     } catch (err) {
@@ -191,8 +191,8 @@ async function batchTransactData(data, action = 'Put') {
 
   const dataChunks = chunkArray(data, TRANSACTION_MAX_SIZE);
 
-  logger.debug('Data items:', data.length);
-  logger.debug('Transactions:', dataChunks.length);
+  logger.info('Data items:', data.length);
+  logger.info('Transactions:', dataChunks.length);
 
   try {
     for (let index = 0; index < dataChunks.length; index++) {

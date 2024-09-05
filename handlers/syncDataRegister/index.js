@@ -3,9 +3,8 @@
  * If a protected area is not already in the Reserve Rec Database, it will be added.
  */
 
-const { getNowISO, logger, sendResponse } = require('/opt/base');
+const { getNowISO, httpGet, logger, sendResponse } = require('/opt/base');
 const { TABLE_NAME, batchTransactData, getOne, marshall } = require('/opt/dynamodb');
-const { getDataRegisterRecords } = require('/opt/dataRegister');
 
 const DATA_REGISTER_ENDPOINT = process.env.DATA_REGISTER_ENDPOINT || 'https://dev-data.bcparks.ca/api';
 const DATA_REGISTER_SUBDIRECTORY = '/parks/names';
@@ -24,8 +23,11 @@ exports.handler = async (event, context) => {
     const params = {
       status: ESTABLISHED_STATE
     };
+    const headers = {
+      'x-api-key': DATA_REGISTER_API_KEY
+    }
     const url = `${DATA_REGISTER_ENDPOINT}${DATA_REGISTER_SUBDIRECTORY}`;
-    const list = await getDataRegisterRecords(url, DATA_REGISTER_API_KEY, params);
+    const list = await httpGet(url, params, headers);
 
     // get the protected areas from the response
     const protectedAreas = list?.data?.data?.items || [];

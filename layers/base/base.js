@@ -1,5 +1,6 @@
 const { createLogger, format, transports } = require("winston");
 const { combine, timestamp } = format;
+const axios = require('axios');
 const { DateTime } = require('luxon');
 
 const TIMEZONE = 'America/Vancouver';
@@ -80,6 +81,28 @@ const getNow = function (tz = null) {
   return DateTime.now().setZone(tz);
 };
 
+async function httpGet(url, params = null, headers = null) {
+  try {
+    let request = {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'None',
+        'Accept': 'application/json',
+      }
+    };
+    if (params) {
+      request.params = params;
+    }
+    if (headers) {
+      request.headers = { ...headers, ...request.headers };
+    }
+    return await axios.get(encodeURI(url), request);
+  } catch (error) {
+    logger.debug('Error getting data register records: getDataRegisterRecords function in dataRegister layer');
+    throw error;
+  }
+}
+
 const Exception = class extends Error {
   constructor(message, errorData) {
     super(message);
@@ -97,4 +120,5 @@ module.exports = {
   getNowISO,
   logger,
   sendResponse,
+  httpGet
 }

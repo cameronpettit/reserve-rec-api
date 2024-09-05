@@ -68,13 +68,16 @@ const checkWarmup = function (event) {
   }
 };
 
-const getNowISO = function () {
-  return getNow().toISO();
+const getNowISO = function (tz = null) {
+  return getNow(tz).toISO();
 };
 
 
-const getNow = function () {
-  return DateTime.now().setZone(TIMEZONE);
+const getNow = function (tz = null) {
+  if (!tz) {
+    tz = 'UTC'
+  }
+  return DateTime.now().setZone(tz);
 };
 
 const Exception = class extends Error {

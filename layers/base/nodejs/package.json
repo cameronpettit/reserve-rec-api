@@ -4,9 +4,10 @@
   "author": "Team Osprey",
   "license": "MIT",
   "dependencies": {
+    "axios": "^1.7.7",
     "jsonwebtoken": "^9.0.0",
     "jwks-rsa": "^3.0.0",
-    "luxon": "^3.4.4",
+    "luxon": "^3.5.0",
     "winston": "^3.10.0"
   },
   "scripts": {

@@ -71,12 +71,14 @@ jobs:
           INSTANCE_TYPE: ${{ vars.INSTANCE_TYPE }}
           OPEN_SEARCH_MAIN_INDEX: ${{ vars.OPEN_SEARCH_MAIN_INDEX }}
           EBS_IOPS: ${{ vars.EBS_IOPS }}
+          DATA_REGISTER_ENDPOINT: ${{ vars.DATA_REGISTER_ENDPOINT }}
+          DATA_REGISTER_API_KEY: ${{ secrets.DATA_REGISTER_API_KEY }}
         run: |
-          sam deploy --stack-name $STACK_NAME --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides "TableName=$TABLE_NAME" "TableNameAudit=$TABLE_NAME_AUDIT" "Stage=$STAGE" "AccountId=$ACCOUNT_ID" "DomainName=$DOMAIN_NAME" "KMSKeyId=$KMS_KEY_ID" "InstanceCount=$INSTANCE_COUNT" "InstanceType=$INSTANCE_TYPE" "OpenSearchMainIndex=$OPEN_SEARCH_MAIN_INDEX" "EBSIops=$EBS_IOPS"
+          sam deploy --stack-name $STACK_NAME --no-confirm-changeset --no-fail-on-empty-changeset --parameter-overrides "TableName=$TABLE_NAME" "TableNameAudit=$TABLE_NAME_AUDIT" "Stage=$STAGE" "AccountId=$ACCOUNT_ID" "DomainName=$DOMAIN_NAME" "KMSKeyId=$KMS_KEY_ID" "InstanceCount=$INSTANCE_COUNT" "InstanceType=$INSTANCE_TYPE" "OpenSearchMainIndex=$OPEN_SEARCH_MAIN_INDEX" "EBSIops=$EBS_IOPS" "DataRegisterEndpoint=$DATA_REGISTER_ENDPOINT" "DataRegisterApiKey=$DATA_REGISTER_API_KEY"
 
       # - shell: bash
       #   env:
       #     WEBHOOK_URL: ${{ secrets.WEBHOOK_URL }}
       #   run: |
       #     curl -X POST -H 'Content-Type: application/json' $WEBHOOK_URL --data '{"text":"Data Register - Deploy Reserve Rec API Dev Complete"}'
-      
+

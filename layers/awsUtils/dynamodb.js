@@ -1,41 +1,39 @@
-const { DynamoDB } = require('@aws-sdk/client-dynamodb');
+const { DynamoDB, DynamoDBClient, PutItemCommand, QueryCommand, GetItemCommand, TransactWriteItemsCommand } = require('@aws-sdk/client-dynamodb');
 const { marshall, unmarshall } = require('@aws-sdk/util-dynamodb');
 const { logger } = require('/opt/base');
 
-const TABLE_NAME = process.env.TABLE_NAME || 'NameRegister';
+const TABLE_NAME = process.env.TABLE_NAME || 'reserve-rec';
 const AWS_REGION = process.env.AWS_REGION || 'ca-central-1';
-const AUDIT_TABLE_NAME = process.env.TABLE_NAME || "Audit";
-const STATUS_INDEX_NAME = process.env.STATUS_INDEX_NAME || "ByStatusOfOrcs";
-const LEGALNAME_INDEX_NAME = process.env.STATUS_INDEX_NAME || "ByLegalName";
+const DYNAMODB_ENDPOINT_URL = process.env.DYNAMODB_ENDPOINT_URL || 'http://localhost:8000';
 
 const TRANSACTION_MAX_SIZE = 100;
 
 const options = {
-  region: AWS_REGION
+  region: AWS_REGION,
+  endpoint: DYNAMODB_ENDPOINT_URL
 };
-if (process.env.IS_OFFLINE === 'true') {
-  // Env vars evaluate as strings
-  options.endpoint = process.env.DYNAMODB_ENDPOINT_URL || 'http://localhost:8000';
-}
 
 const dynamodb = new DynamoDB(options);
 
+const dynamodbClient = new DynamoDBClient(options);
+
 // simple way to return a single Item by primary key.
 async function getOne(pk, sk) {
-  logger.info(`getItem: { pk: ${pk}, sk: ${sk} }`);
+  logger.debug(`getItem: { pk: ${pk}, sk: ${sk} }`);
   const params = {
     TableName: TABLE_NAME,
     Key: marshall({ pk, sk }),
   };
-  let item = await dynamodb.getItem(params);
+  let item = await dynamodbClient.send(new GetItemCommand(params));
   if (item?.Item) {
     return unmarshall(item.Item);
   }
-  return {};
+  return null;
 }
 
-async function runQuery(query, limit = null, lastEvaluatedKey = null, paginated = true) {
-  logger.info('query:', query);
+
+async function
+  runQuery(query, limit = null, lastEvaluatedKey = null, paginated = true) {
   let data = [];
   let pageData = [];
   let page = 0;
@@ -54,7 +52,7 @@ async function runQuery(query, limit = null, lastEvaluatedKey = null, paginated 
     if (limit && paginated) {
       query.Limit = limit;
     }
-    pageData = await dynamodb.query(query);
+    pageData = await dynamodbClient.send(new QueryCommand(query));
     data = data.concat(
       pageData.Items.map(item => {
         return unmarshall(item);
@@ -63,11 +61,11 @@ async function runQuery(query, limit = null, lastEvaluatedKey = null, paginated 
     if (page < 2) {
       logger.debug(`Page ${page} data:`, data);
     } else {
-      logger.info(`Page ${page} contains ${pageData.Items.length} additional query results...`);
+      logger.debug(`Page ${page} contains ${pageData.Items.length} additional query results...`);
     }
   } while (pageData?.LastEvaluatedKey && !paginated);
 
-  logger.info(`Query result pages: ${page}, total returned items: ${data.length}`);
+  logger.debug(`Query result pages: ${page}, total returned items: ${data.length}`);
   if (paginated) {
     return {
       lastEvaluatedKey: pageData.LastEvaluatedKey,
@@ -81,7 +79,6 @@ async function runQuery(query, limit = null, lastEvaluatedKey = null, paginated 
 }
 
 async function runScan(query, limit = null, lastEvaluatedKey = null, paginated = true) {
-  logger.info('query:', query);
   let data = [];
   let pageData = [];
   let page = 0;
@@ -109,11 +106,11 @@ async function runScan(query, limit = null, lastEvaluatedKey = null, paginated =
     if (page < 2) {
       logger.debug(`Page ${page} data:`, data);
     } else {
-      logger.info(`Page ${page} contains ${pageData.Items.length} additional scan results...`);
+      logger.debug(`Page ${page} contains ${pageData.Items.length} additional scan results...`);
     }
   } while (pageData?.LastEvaluatedKey && !paginated);
 
-  logger.info(`Scan result pages: ${page}, total returned items: ${data.length}`);
+  logger.debug(`Scan result pages: ${page}, total returned items: ${data.length}`);
   if (paginated) {
     return {
       lastEvaluatedKey: pageData.LastEvaluatedKey,
@@ -137,7 +134,6 @@ async function putItem(obj, tableName = TABLE_NAME) {
 }
 
 async function batchWriteData(dataToInsert, chunkSize, tableName) {
-  logger.info("dataToInsert");
   logger.debug(JSON.stringify(dataToInsert));
 
   const dataChunks = chunkArray(dataToInsert, chunkSize);
@@ -166,7 +162,7 @@ async function batchWriteData(dataToInsert, chunkSize, tableName) {
       const data = await dynamodb.batchWriteItem(params);
       logger.info(`BatchWriteItem response for chunk ${index}:`, data);
     } catch (err) {
-      logger.error(`Error batch writing items in chunk ${index}:`, err);
+      logger.info(`Error batch writing items in chunk ${index}:`, err);
     }
   }
 }
@@ -195,10 +191,8 @@ async function batchTransactData(data, action = 'Put') {
 
   const dataChunks = chunkArray(data, TRANSACTION_MAX_SIZE);
 
-  logger.debug(JSON.stringify(data));
-  logger.debug(JSON.stringify(dataChunks));
-  logger.info('Data items:', data.length);
-  logger.info('Transactions:', dataChunks.length);
+  logger.debug('Data items:', data.length);
+  logger.debug('Transactions:', dataChunks.length);
 
   try {
     for (let index = 0; index < dataChunks.length; index++) {
@@ -219,10 +213,15 @@ async function batchTransactData(data, action = 'Put') {
         }
       });
 
-      logger.debug(JSON.stringify(TransactItems));
+      logger.debug(JSON.stringify(TransactItems, null, 2));
 
-      const data = await dynamodb.transactWriteItems({ TransactItems: TransactItems });
-      logger.debug(`BatchWriteItem response for chunk ${index}:`, data);
+      const data = await dynamodbClient.send(
+        new TransactWriteItemsCommand({ TransactItems: TransactItems })
+      );
+      if (data.$metadata.httpStatusCode !== 200) {
+        throw new Error(`BatchTransactItems failed with status code: ${data.$metadata.httpStatusCode}`);
+      }
+      logger.info(`BatchWriteItem response for chunk ${index}:`, data);
     }
   } catch (error) {
     logger.error(`Error batch writing items:`, error);
@@ -231,33 +230,19 @@ async function batchTransactData(data, action = 'Put') {
   return true;
 }
 
-/**
- * Asynchronously sets the status for a list of sites.
- *
- * @async
- * @param {Array<string>} sites - An array of site identifiers. Each identifier should be in the form of '<ProtectedAreaID>:Site:<SiteID>'.
- * @param {string} status - The status to be set for the sites.
- * @returns {Promise<Object>} A promise that resolves with the new site object.
- */
-async function setSiteStatus(sites, status) {
-  // Takes the form of [<ProtectedAreaID>:Site::<SiteID>]
-  // Sets the site status and returns the new object
-  return Promise.resolve();
-}
-
-
 module.exports = {
-  AUDIT_TABLE_NAME,
   AWS_REGION,
-  LEGALNAME_INDEX_NAME,
-  STATUS_INDEX_NAME,
   TABLE_NAME,
+  dynamodb,
+  dynamodbClient,
   batchTransactData,
   batchWriteData,
-  dynamodb,
   getOne,
+  marshall,
   putItem,
   runQuery,
   runScan,
-  setSiteStatus
+  unmarshall,
+  PutItemCommand,
+  QueryCommand,
 };

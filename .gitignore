@@ -1,6 +1,7 @@
 node_modules
 .aws-sam
 coverage
+env.json
 
 # dotenv environment variables file
 .env

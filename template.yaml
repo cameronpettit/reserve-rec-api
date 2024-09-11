@@ -519,7 +519,6 @@ Resources:
           AttributeDataType: String
           Mutable: false
           Required: true
-    MfaConfiguration: "OFF"
     Policies:
       PasswordPolicy:
         RequireLowercase: true

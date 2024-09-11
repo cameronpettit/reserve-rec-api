@@ -534,6 +534,7 @@ Resources:
   
   GoogleUserPoolIdentityProvider:
     Type: AWS::Cognito::UserPoolIdentityProvider
+    DependsOn: [CognitoUserPool]
     Properties:
       UserPoolId: !Ref CognitoUserPool
       ProviderName: "Google"
@@ -547,7 +548,7 @@ Resources:
 
   CognitoUserPoolClient:
     Type: AWS::Cognito::UserPoolClient
-    DependsOn: [GoogleUserPoolIdentityProvider]
+    DependsOn: [GoogleUserPoolIdentityProvider, CognitoUserPool]
     Properties:
       ClientName: !Ref CognitoUserPoolClientName
       UserPoolId: !Ref CognitoUserPool
@@ -576,12 +577,14 @@ Resources:
       
   UserPoolDomain: 
     Type: AWS::Cognito::UserPoolDomain 
+    DependsOn: [CognitoUserPool]
     Properties:
       UserPoolId: !Ref CognitoUserPool 
       Domain: !Sub "${Project}-${Environment}"
     
   UserPoolUICustomization: 
     Type: AWS::Cognito::UserPoolUICustomizationAttachment
+    DependsOn: [CognitoUserPool]
     DependsOn: UserPoolDomain
     Properties: 
       UserPoolId: !Ref CognitoUserPool

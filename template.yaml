@@ -582,7 +582,7 @@ Resources:
     Type: AWS::Cognito::UserPoolUICustomizationAttachment
     DependsOn: UserPoolDomain
     Properties: 
-      UserPoolId: !Ref UserPool
+      UserPoolId: !Ref CognitoUserPool
       ClientId: 'ALL'
       CSS: |
         .banner-customizable { 

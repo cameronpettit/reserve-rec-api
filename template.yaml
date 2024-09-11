@@ -57,7 +57,7 @@ Parameters:
   CognitoUserPoolClientName:
     Type: String
     Default: 'public-web-app'
-  UserPoolDomain:
+  UserPoolDomainName:
     Type: String
     Default: 'reserve-rec'
   GoogleAppId:
@@ -523,7 +523,7 @@ Resources:
     Type: AWS::Cognito::UserPoolDomain 
     Properties:
       UserPoolId: !Ref CognitoUserPool 
-      Domain: !Ref UserPoolDomain
+      Domain: !Ref UserPoolDomainName
     
   GoogleUserPoolIdentityProvider:
     Type: AWS::Cognito::UserPoolIdentityProvider

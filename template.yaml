@@ -519,17 +519,17 @@ Resources:
           AttributeDataType: String
           Mutable: false
           Required: true
-    Policies:
-      PasswordPolicy:
-        RequireLowercase: true
-        RequireSymbols: false
-        RequireNumbers: true
-        MinimumLength: "8"
-        RequireUppercase: true
-    AccountRecoverySetting:
-      RecoveryMechanisms:
-        - Name: "verified_email"
-          Priority: 1
+      Policies:
+        PasswordPolicy:
+          RequireLowercase: true
+          RequireSymbols: false
+          RequireNumbers: true
+          MinimumLength: "8"
+          RequireUppercase: true
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: "verified_email"
+            Priority: 1
   
   GoogleUserPoolIdentityProvider:
     Type: AWS::Cognito::UserPoolIdentityProvider

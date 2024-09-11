@@ -57,12 +57,19 @@ Parameters:
   CognitoUserPoolClientName:
     Type: String
     Default: 'public-web-app'
-  UserPoolDomainName:
+  IdentityPoolName:
+    Type: String
+    Default: 'ReserveRecIdentity'
+  Project:
     Type: String
     Default: 'reserve-rec'
   GoogleAppId:
     Type: String
   GoogleAppSecret:
+    Type: String
+  CognitoCallbackURL:
+    Type: String
+  Environment:
     Type: String
 
 Resources:
@@ -502,29 +509,29 @@ Resources:
     Type: AWS::Cognito::UserPool
     Properties:
       UserPoolName: !Ref CognitoUserPoolName
-      Policies:
-        PasswordPolicy:
-          MinimumLength: 8
+      DeletionProtection: ACTIVE
+      AutoVerifiedAttributes:
+        - "email"
       UsernameAttributes:
         - email
       Schema:
-        - AttributeDataType: String
-          Name: email
-          Required: false
+        - Name: email
+          AttributeDataType: String
+          Mutable: false
+          Required: true
+    MfaConfiguration: "OFF"
+    Policies:
+      PasswordPolicy:
+        RequireLowercase: true
+        RequireSymbols: false
+        RequireNumbers: true
+        MinimumLength: "8"
+        RequireUppercase: true
+    AccountRecoverySetting:
+      RecoveryMechanisms:
+        - Name: "verified_email"
+          Priority: 1
   
-  CognitoUserPoolClient:
-    Type: AWS::Cognito::UserPoolClient
-    Properties:
-      UserPoolId: !Ref CognitoUserPool
-      ClientName: !Ref CognitoUserPoolClientName
-      GenerateSecret: false
-      
-  UserPoolDomain: 
-    Type: AWS::Cognito::UserPoolDomain 
-    Properties:
-      UserPoolId: !Ref CognitoUserPool 
-      Domain: !Ref UserPoolDomainName
-    
   GoogleUserPoolIdentityProvider:
     Type: AWS::Cognito::UserPoolIdentityProvider
     Properties:
@@ -537,6 +544,110 @@ Resources:
       ProviderType: "Google"
       AttributeMapping:
         email: "email"
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    DependsOn: [GoogleUserPoolIdentityProvider]
+    Properties:
+      ClientName: !Ref CognitoUserPoolClientName
+      UserPoolId: !Ref CognitoUserPool
+      SupportedIdentityProviders:
+        - Google
+      GenerateSecret: false # enabling this will break the frontend login
+      AllowedOAuthFlowsUserPoolClient: true
+      CallbackURLs: !Ref CognitoCallbackURL
+      LogoutURLs: !Ref CognitoCallbackURL
+      AllowedOAuthFlows:
+        - code
+      AllowedOAuthScopes:
+        - email
+        - openid
+        - profile
+        - aws.cognito.signin.user.admin
+      TokenValidityUnits:
+        IdToken: days
+        AccessToken: days
+        RefreshToken: days
+      IdTokenValidity: 1 # from five minutes to one day
+      AccessTokenValidity: 1 # from five minutes to one day
+      RefreshTokenValidity: 30 # from 60 minutes to 10 years.
+      
+  UserPoolDomain: 
+    Type: AWS::Cognito::UserPoolDomain 
+    Properties:
+      UserPoolId: !Ref CognitoUserPool 
+      Domain: !Sub "${Project}-${Environment}"
+    
+  UserPoolUICustomization: 
+    Type: AWS::Cognito::UserPoolUICustomizationAttachment
+    DependsOn: UserPoolDomain
+    Properties: 
+      UserPoolId: !Ref UserPool
+      ClientId: 'ALL'
+      CSS: |
+        .banner-customizable { 
+          background-color: #6E6F6E;
+          padding: 2em 0;
+        }
+        .background-customizable {
+          background-color: #FAFAFA;
+        }
+        .submitButton-customizable {
+          background-color: #6E6F6E;
+        }
+        .submitButton-customizable:hover {
+          background-color: #6E6F6E;
+        }
+        .inputField-customizable {
+          border-color: #FAFAFA;
+        }
+        .inputField-customizable:focus {
+          border-color: #6E6F6E;
+        }
+
+  IdentityPool:
+    Type: AWS::Cognito::IdentityPool
+    Properties:
+      IdentityPoolName: !Ref IdentityPoolName
+      AllowUnauthenticatedIdentities: false
+      CognitoIdentityProviders:
+        - ClientId: !Ref CognitoUserPoolClient
+          ProviderName: !GetAtt CognitoUserPool.ProviderName
+
+  CognitoAuthorizedRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub "${Project}-${Environment}-cognito-authorized"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: "Allow"
+            Principal:
+              Federated: "cognito-identity.amazonaws.com"
+            Action:
+              - "sts:AssumeRoleWithWebIdentity"
+            Condition:
+              "StringEquals":
+                "cognito-identity.amazonaws.com:aud": !Ref IdentityPool
+              "ForAnyValue:StringLike":
+                "cognito-identity.amazonaws.com:amr": authenticated
+      Policies:
+        - PolicyName: "CognitoAuthorizedPolicy"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: "Allow"
+                Action:
+                  - "cognito-sync:*"
+                  - "cognito-identity:*"
+                Resource: "*"
+
+  IdentityPoolRoleMapping:
+    Type: AWS::Cognito::IdentityPoolRoleAttachment
+    Properties:
+      IdentityPoolId: !Ref IdentityPool
+      Roles:
+        authenticated: !GetAtt CognitoAuthorizedRole.Arn
 
 Outputs:
   DynamoDBTable:

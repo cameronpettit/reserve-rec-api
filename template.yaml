@@ -612,6 +612,7 @@ Resources:
 
   IdentityPool:
     Type: AWS::Cognito::IdentityPool
+    DependsOn: [CognitoUserPool, CognitoUserPoolClient]
     Properties:
       IdentityPoolName: !Ref IdentityPoolName
       AllowUnauthenticatedIdentities: false
@@ -621,6 +622,7 @@ Resources:
 
   CognitoAuthorizedRole:
     Type: AWS::IAM::Role
+    DependsOn: [IdentityPool]
     Properties:
       RoleName: !Sub "${Project}-${Environment}-cognito-authorized"
       AssumeRolePolicyDocument:
@@ -649,6 +651,7 @@ Resources:
 
   IdentityPoolRoleMapping:
     Type: AWS::Cognito::IdentityPoolRoleAttachment
+    DependsOn: [IdentityPool, CognitoAuthorizedRole]
     Properties:
       IdentityPoolId: !Ref IdentityPool
       Roles:

@@ -424,6 +424,12 @@ Resources:
               AWS: '*'
             Action: 'es:*'
             Resource: !GetAtt StreamRole.Arn
+    AdvancedSecurityOptions:
+      Enabled: true
+      InternalUserDatabaseEnabled: true
+      MasterUserOptions:
+        MasterUserName: <username>
+        MasterUserPassword: <password>
 
   ### DYNAMODB TABLES ###
   ProcessDynamoDBStream:

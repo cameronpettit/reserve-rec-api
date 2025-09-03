@@ -63,7 +63,7 @@ new ReserveRecCdkStack(app, process.env.STACK_NAME, {
     SAML_IDP_METADATA_CONTENT: process.env.SAML_IDP_METADATA_CONTENT || 'saml-idp-metadata-content',
     DATA_REGISTER_URL: process.env.DATA_REGISTER_URL || 'https://dev-data.bcparks.ca/api',
     S3_BUCKET_GEOSPATIAL: process.env.S3_BUCKET_GEOSPATIAL || 'reserve-rec-geospatial',
-    
+
     // Bambora
     MERCHANT_ID: process.env.MERCHANT_ID || "123123123",
     HASH_KEY: process.env.HASH_KEY || "abcd1234-123a-123a-1234-1234abcd",
@@ -78,9 +78,9 @@ new ReserveRecCdkStack(app, process.env.STACK_NAME, {
     adminUserPoolName: process.env.ADMIN_USER_POOL_NAME || 'admin',
     adminUserPoolClientName: process.env.ADMIN_USER_POOL_CLIENT_NAME || 'admin-web-app',
     adminCognitoCallbackURLs: process.env.ADMIN_COGNITO_CALLBACK_URLS || 'http://localhost:4200,http://localhost:4300',
-    adminUserPoolId: process.env.ADMIN_USER_POOL_ID || 'ChangeToAdminUserPoolID', 
-    adminUserPoolClientId: process.env.ADMIN_CLIENT_ID || 'ChangeToAdminClientID', 
-    cognitoRegion: process.env.COGNITO_REGION || 'ca-central-1', 
+    adminUserPoolId: process.env.ADMIN_USER_POOL_ID || 'ChangeToAdminUserPoolID',
+    adminUserPoolClientId: process.env.ADMIN_CLIENT_ID || 'ChangeToAdminClientID',
+    cognitoRegion: process.env.COGNITO_REGION || 'ca-central-1',
     JWT_KEY_ID: process.env.JWT_KEY_ID || 'bcscencryption',
     BCSC_KEY_ID: process.env.BCSC_KEY_ID || 'ChangeToBCSCKeyID',
     },

@@ -25,13 +25,14 @@ exports.handler = async function (event, context) {
   }
 
   if (userPoolId === 'admin' || userPoolId === 'public') {
-    // Shortform to get the appropriate user pool ID from config variables
+    // Shortform to get the approriate user pool ID from config variables
     // Instead of passing the full user pool ID, clients can pass 'admin' or 'public'
     const config = await getOne('config', userPoolId);
-    if (userPoolId === 'admin' && config && config?.ADMIN_USER_POOL_ID) {
-      userPoolId = config.ADMIN_USER_POOL_ID;
-    } else if (userPoolId === 'public' && config && config?.PUBLIC_USER_POOL_ID) {
-      userPoolId = config.PUBLIC_USER_POOL_ID;
+    if (config && (config?.ADMIN_USER_POOL_ID)) {
+      userPoolId = config?.ADMIN_USER_POOL_ID;
+    }
+    if (config && (config?.PUBLIC_USER_POOL_ID)) {
+      userPoolId = config?.PUBLIC_USER_POOL_ID;
     }
   }
 

@@ -1,3 +1,4 @@
+const { DURATION_PROPERTY_ENUMS, TIME_24H_ENUMS } = require('./data-constants');
 const { DateTime, Exception } = require('/opt/base');
 
 class rulesFns {
@@ -71,9 +72,11 @@ class rulesFns {
    * @throws {Exception} Throws an exception if the object does not match the expected format.
    */
   expect24hTimeObjFormat(value) {
-    const timeIncrements = ['hour', 'minute', 'second'];
+    if (Object.keys(value).length === 0) {
+      throw new Exception(`Invalid time format: Empty object. 'Received: '${JSON.stringify(value, null, 2)}'.`, { code: 400 });
+    }
     for (const key in value) {
-      if (!timeIncrements.includes(key)) {
+      if (!TIME_24H_ENUMS.includes(key)) {
         throw new Exception(`Invalid time format: Expected {hour: <0-23>, minute?: <0-59>, second?: <0-59>}.  'Received: '${JSON.stringify(value, null, 2)}'.`, { code: 400 });
       }
       this.expectInteger(value[key]);
@@ -114,9 +117,11 @@ class rulesFns {
    * @throws {Exception} Throws an exception if the duration object contains invalid keys or values.
    */
   expectDurationObjFormat(value) {
-    const durationIncrements = ['years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds'];
+    if (Object.keys(value).length === 0) {
+      throw new Exception(`Invalid duration format: Empty object. 'Received: '${JSON.stringify(value, null, 2)}'.`, { code: 400 });
+    };
     for (const key in value) {
-      if (!durationIncrements.includes(key)) {
+      if (!DURATION_PROPERTY_ENUMS.includes(key)) {
         throw new Exception(`Invalid duration format: Expected {years?: <number>, months?: <number>, weeks?: <0-3>, days?: <0-6>, hours?: <0-23>, minutes?: <0-59>, seconds?: <0-59>}. 'Received: '${JSON.stringify(value, null, 2)}'.`, { code: 400 });
       }
       this.expectInteger(value[key]);
@@ -383,8 +388,8 @@ class rulesFns {
 
   // Expect the object to only have these properties
   expectObjectToOnlyHaveProperties(value, properties) {
-  const keys = Object.keys(value);
-  const extraKeys = keys.filter(key => !properties.includes(key));
+    const keys = Object.keys(value);
+    const extraKeys = keys.filter(key => !properties.includes(key));
     if (extraKeys.length > 0) {
       throw new Exception(`Invalid object: Expected object to only have properties: '${properties.join(', ')}'. Extra properties found: '${extraKeys.join(', ')}'. Received: '[${keys.join(', ') || keys}]'.`, { code: 400 });
     }

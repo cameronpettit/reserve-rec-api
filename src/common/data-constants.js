@@ -1,8 +1,8 @@
 const DEFAULT_API_UPDATE_CONFIG = {
-    fields: {},
-    failOnError: true,
-    autoTimestamp: false,
-    autoVersion: false,
+  fields: {},
+  failOnError: true,
+  autoTimestamp: false,
+  autoVersion: false,
 };
 
 // Available timezones for British Columbia.
@@ -10,13 +10,13 @@ const TIMEZONE_ENUMS = ['America/Vancouver', 'America/Edmonton', 'America/Fort_N
 
 // The following are the allowed facility types and related subtypes for facilities
 const FACILITY_TYPE_ENUMS = {
-    campground: [],
-    structure: ['parkingLot', 'boatLaunch', 'yurt', 'building', 'cabin'],
-    trail: [],
-    accessPoint: [],
-    naturalFeature: ['lake', 'summit', 'pointOfInterest', 'bay', 'river', 'beach'],
-    dayUse: []
-  };
+  campground: [],
+  structure: ['parkingLot', 'boatLaunch', 'yurt', 'building', 'cabin'],
+  trail: [],
+  accessPoint: [],
+  naturalFeature: ['lake', 'summit', 'pointOfInterest', 'bay', 'river', 'beach'],
+  dayUse: []
+};
 
 // The following are the allowed filters for the activity collection API.
 const ALLOWED_FILTERS = [
@@ -62,6 +62,30 @@ const ACTIVITY_TYPE_ENUMS = [
 // The following are the allowed policy types.
 const POLICY_TYPE_ENUMS = ['booking', 'change', 'fee', 'party'];
 
+// The following are the allowed units of duration for policies (and other items)
+const DURATION_PROPERTY_ENUMS = [
+  'milliseconds',
+  'seconds',
+  'minutes',
+  'hours',
+  'days',
+  'weeks',
+  'months',
+  'years'
+];
+
+const TIME_24H_ENUMS = [
+  'millisecond',
+  'second',
+  'minute',
+  'hour',
+]
+
+const POLICY_BOOKING_RESERVATION_WINDOW_TYPE_ENUMS = [
+  'rolling',
+  'fixed'
+]
+
 const PARTY_AGE_CATEGORY_ENUMS = [
   'adult',
   'child',
@@ -70,9 +94,9 @@ const PARTY_AGE_CATEGORY_ENUMS = [
 ];
 
 const RATE_CLASS_ENUMS = [
-    'standard',
-    'senior',
-    'SSCFE'
+  'standard',
+  'senior',
+  'SSCFE'
 ];
 
 const BOOKING_STATUS_ENUMS = [
@@ -94,15 +118,17 @@ const TRANSACTION_STATUS_ENUMS = [
 ];
 
 module.exports = {
-    DEFAULT_API_UPDATE_CONFIG,
-    ALLOWED_FILTERS,
-    BOOKING_STATUS_ENUMS,
-    SUB_ACTIVITY_TYPE_ENUMS,
-    ACTIVITY_TYPE_ENUMS,
-    FACILITY_TYPE_ENUMS,
-    PARTY_AGE_CATEGORY_ENUMS,
-    POLICY_TYPE_ENUMS,
-    RATE_CLASS_ENUMS,
-    TIMEZONE_ENUMS,
-    TRANSACTION_STATUS_ENUMS
+  DEFAULT_API_UPDATE_CONFIG,
+  DURATION_PROPERTY_ENUMS,
+  TIME_24H_ENUMS,
+  ALLOWED_FILTERS,
+  BOOKING_STATUS_ENUMS,
+  SUB_ACTIVITY_TYPE_ENUMS,
+  ACTIVITY_TYPE_ENUMS,
+  FACILITY_TYPE_ENUMS,
+  PARTY_AGE_CATEGORY_ENUMS,
+  POLICY_TYPE_ENUMS,
+  RATE_CLASS_ENUMS,
+  TIMEZONE_ENUMS,
+  POLICY_BOOKING_RESERVATION_WINDOW_TYPE_ENUMS
 };

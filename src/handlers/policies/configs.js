@@ -3,6 +3,148 @@ const { POLICY_TYPE_ENUMS } = require('../../common/data-constants');
 
 const rf = new rulesFns();
 
+const POLICY_BOOKING_API_PUT_CONFIG = {
+  failOnError: true,
+  autoTimestamp: true,
+  autoVersion: false,
+  fields: {
+    pk: {
+      isMandatory: true,
+      rulesFn: ({ value, action }) => {
+        rf.expectType(value, ['string']);
+        rf.expectAction(action, ['set']);
+      }
+    },
+    sk: {
+      isMandatory: true,
+      rulesFn: ({ value, action }) => {
+        rf.expectType(value, ['string']);
+        rf.expectAction(action, ['set']);
+      }
+    },
+    displayName: {
+      isMandatory: true,
+      rulesFn: ({ value, action }) => {
+        rf.expectType(value, ['string']);
+        rf.expectAction(action, ['set']);
+      }
+    },
+    description: {
+      rulesFn: ({ value, action }) => {
+        rf.expectType(value, ['string']);
+        rf.expectAction(action, ['set']);
+      }
+    },
+    schema: {
+      isMandatory: true,
+      rulesFn: ({ value, action }) => {
+        rf.expectValueInList(value, ['policy']);
+        rf.expectAction(action, ['set']);
+      }
+    },
+    policyType: {
+      isMandatory: true,
+      rulesFn: ({ value, action }) => {
+        rf.expectValueInList(value, POLICY_TYPE_ENUMS);
+        rf.expectAction(action, ['set']);
+      }
+    },
+    policyId: {
+      isMandatory: true,
+      rulesFn: ({ value, action }) => {
+        rf.expectType(value, ['number']);
+        rf.expectAction(action, ['set']);
+      }
+    },
+    identifier: {
+      isMandatory: true,
+      rulesFn: ({ value, action }) => {
+        rf.expectType(value, ['number']);
+        rf.expectAction(action, ['set']);
+      }
+    },
+    policyIdVersion: {
+      isMandatory: true,
+      rulesFn: ({ value, action }) => {
+        rf.expectType(value, ['number']);
+        rf.expectAction(action, ['set']);
+      }
+    },
+    minStay: {
+      rulesFn: ({ value, action }) => {
+        rf.expectDurationObjFormat(value);
+        rf.expectAction(action, ['set']);
+      }
+    }
+  },
+  maxStay: {
+    rulesFn: ({ value, action }) => {
+      rf.expectDurationObjFormat(value);
+      rf.expectAction(action, ['set']);
+    }
+  },
+  reservationWindowType: {
+    rulesFn: ({ value, action }) => {
+      rf.expectValueInList(value, POLICY_BOOKING_RESERVATION_WINDOW_TYPE_ENUMS);
+      rf.expectAction(action, ['set']);
+    }
+  },
+  rollingWindowDuration: {
+    rulesFn: ({ value, action }) => {
+      rf.expectDurationObjFormat(value);
+      rf.expectAction(action, ['set']);
+    }
+  },
+  fixedWindowLaunchDate: {
+    rulesFn: ({ value, action }) => {
+      rf.expectISODateObjFormat(value);
+      rf.expectAction(action, ['set']);
+    }
+  },
+  openBookingTime: {
+    rulesFn: ({ value, action }) => {
+      rf.expect24hTimeObjFormat(value);
+      rf.expectAction(action, ['set']);
+    }
+  },
+  closeBookingTime: {
+    rulesFn: ({ value, action }) => {
+      rf.expect24hTimeObjFormat(value);
+      rf.expectAction(action, ['set']);
+    }
+  },
+  checkInTime: {
+    rulesFn: ({ value, action }) => {
+      rf.expect24hTimeObjFormat(value);
+      rf.expectAction(action, ['set']);
+    }
+  },
+  checkOutTime: {
+    rulesFn: ({ value, action }) => {
+      rf.expect24hTimeObjFormat(value);
+      rf.expectAction(action, ['set']);
+    }
+  },
+  noShowTime: {
+    rulesFn: ({ value, action }) => {
+      rf.expect24hTimeObjFormat(value);
+      rf.expectAction(action, ['set']);
+    }
+  },
+  adminNotes: {
+    rulesFn: ({ value, action }) => {
+      rf.expectType(value, ['string']);
+      rf.expectAction(action, ['set']);
+    }
+  },
+  searchTerms: {
+    rulesFn: ({ value, action }) => {
+      rf.expectType(value, ['string']);
+      rf.expectAction(action, ['set']);
+    }
+  }
+};
+
 const POLICY_BOOKING_API_UPDATE_CONFIG = {
   failOnError: true,
   autoTimestamp: true,

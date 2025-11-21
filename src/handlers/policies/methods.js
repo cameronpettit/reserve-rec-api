@@ -67,7 +67,81 @@ async function getPolicyById(policyType, policyId) {
   }
 }
 
+async function parseRequest(body, requestType, policyType, versionKey = null, policyId = null) {
+  let updateRequests = [];
+  // Check if the request is a batch request
+  if (!Array.isArray(body)) {
+    body = [body];
+  }
+  for (let item of body) {
+    updateRequests.push(
+      await processItem(item, requestType, policyType, policyId, versionKey)
+    );
+  }
+  return updateRequests;
+}
+
+async function processItem(
+  collectionId,
+  item,
+  requestType,
+  policyType,
+  policyId = null,
+  versionKey = null
+) {
+  if (requestType == "POST") {
+    // Throw an error if policyId is passed in POST request, as we only allow auto increment for POST requests
+    if (policyId) {
+      throw new Error(
+        "Can't specify policyId in POST request; must be null to allow auto increment",
+        { code: 400 }
+      );
+    }
+
+    // Make sure defaults are set for the item
+    item['policyType'] = policyType;
+
+    // If it's a retry attempt, remove these attributes from the item (if they exist)
+    delete item?.policyId;
+    delete item?.creationDate;
+    delete item?.lastUpdated;
+    delete item?.version;
+
+    // If it's a POST request, we need to increment the identifier
+    // or we need to create the counter if it doesn't already exist. incrementCounter does either.
+    // Pass in the pk to start iterating the collection.
+    const policyId = await incrementCounter('policy', policyType);
+    const pk = `policy::${policyType}::${policyId}`;
+    const policyIdVersion = await incrementCounter(pk, 'version');
+
+    // Create the sk from the policyType and the identifier
+    const sk = `v${String(policyIdVersion)}`;
+
+    item.pk = pk;
+    item.sk = sk;
+    item.policyType = policyType;
+    item.policyId = Number(policyId);
+    item.identifier = Number(policyId);
+    item.policyIdVersion = Number(policyIdVersion);
+
+    // Create a second item pointing to the latest version
+    const latestItem = { ...item };
+    latestItem.sk = 'latest';
+  }
+
+  return [item, latestItem].map((i) => {
+    return {
+      key: {
+        pk: i.pk,
+        sk: i.sk
+      },
+      data: i,
+    };
+  });
+}
+
 module.exports = {
   getPoliciesByType,
   getPolicyById,
+  parseRequest,
 };

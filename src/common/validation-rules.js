@@ -74,15 +74,12 @@ class rulesFns {
   expect24hTimeObjFormat(value) {
     if (Object.keys(value).length === 0) {
       throw new Exception(`Invalid time format: Empty object. 'Received: '${JSON.stringify(value, null, 2)}'.`, { code: 400 });
-    }
+    };
     for (const key in value) {
       if (!TIME_24H_ENUMS.includes(key)) {
         throw new Exception(`Invalid time format: Expected {hour: <0-23>, minute?: <0-59>, second?: <0-59>}.  'Received: '${JSON.stringify(value, null, 2)}'.`, { code: 400 });
       }
       this.expectInteger(value[key]);
-    }
-    if (!value || !value?.hour || !Object.keys(timeIncrements).some(key => value.includes(key))) {
-      throw new Exception(`Invalid time format: Expected {hour: <0-23>, minute?: <0-59>, second?: <0-59>}. 'Received: '${JSON.stringify(value, null, 2)}'.`, { code: 400 });
     }
   }
 
@@ -125,9 +122,6 @@ class rulesFns {
         throw new Exception(`Invalid duration format: Expected {years?: <number>, months?: <number>, weeks?: <0-3>, days?: <0-6>, hours?: <0-23>, minutes?: <0-59>, seconds?: <0-59>}. 'Received: '${JSON.stringify(value, null, 2)}'.`, { code: 400 });
       }
       this.expectInteger(value[key]);
-    }
-    if (!value || !Object.keys(durationIncrements).some(key => value.includes(key))) {
-      throw new Exception(`Invalid duration format: Expected {years?: <number>, months?: <number>, weeks?: <number>, days?: <number>, hours?: <number>, minutes?: <number>, seconds?: <number>}. 'Received: '${JSON.stringify(value, null, 2)}'.`, { code: 400 });
     }
   }
 

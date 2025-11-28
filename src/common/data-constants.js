@@ -93,6 +93,16 @@ const PARTY_AGE_CATEGORY_ENUMS = [
   'youth'
 ];
 
+const PARTY_UNIT_TYPE_ENUMS = [
+  'person',
+  'vehicle',
+  'site',
+  'cabin',
+  'tentpad',
+  'bunk',
+  'shelter'
+]
+
 const RATE_CLASS_ENUMS = [
   'standard',
   'senior',
@@ -127,6 +137,7 @@ module.exports = {
   ACTIVITY_TYPE_ENUMS,
   FACILITY_TYPE_ENUMS,
   PARTY_AGE_CATEGORY_ENUMS,
+  PARTY_UNIT_TYPE_ENUMS,
   POLICY_TYPE_ENUMS,
   RATE_CLASS_ENUMS,
   TIMEZONE_ENUMS,
